@@ -15,6 +15,74 @@ export default function App() {
     scrollToBottom();
   }, [messages]);
 
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const renderJsonValue = (value, key = '') => {
+    if (typeof value === 'string' && isValidUrl(value)) {
+      return (
+        <a 
+          href={value} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="underline hover:no-underline"
+          style={{ color: 'rgb(66, 193, 227)' }}
+        >
+          Link
+        </a>
+      );
+    }
+    if (typeof value === 'object' && value !== null) {
+      return (
+        <div className="ml-4 mt-1">
+          {Object.entries(value).map(([k, v]) => (
+            <div key={k} className="mb-1">
+              <span className="font-semibold">{k}: </span>
+              {renderJsonValue(v, k)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    if (Array.isArray(value)) {
+      return (
+        <div className="ml-4 mt-1">
+          {value.map((item, idx) => (
+            <div key={idx} className="mb-1">
+              <span className="font-semibold">[{idx}]: </span>
+              {renderJsonValue(item)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return <span>{String(value)}</span>;
+  };
+
+  const renderMessage = (text) => {
+    try {
+      const parsed = JSON.parse(text);
+      return (
+        <div className="space-y-2">
+          {Object.entries(parsed).map(([key, value]) => (
+            <div key={key}>
+              <span className="font-semibold">{key}: </span>
+              {renderJsonValue(value, key)}
+            </div>
+          ))}
+        </div>
+      );
+    } catch {
+      return <p className="text-sm leading-relaxed whitespace-pre-wrap">{text}</p>;
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -25,7 +93,7 @@ export default function App() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://al-izhar-ai.sgp.dom.my.id/chat', {
+      const response = await fetch('https://qctest---api-shooting-710933064092.asia-southeast2.run.app/whatsapp/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,11 +148,11 @@ export default function App() {
       <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#33824E' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))' }}>
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Al-Izhar AI Assistant</h1>
+              <h1 className="text-xl font-semibold text-gray-900">syuting.film AI Assistant</h1>
               <p className="text-sm text-gray-500">Always here to help</p>
             </div>
           </div>
@@ -96,13 +164,10 @@ export default function App() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: 'linear-gradient(to bottom right, #d4e8dc, #a8d4bb)' }}>
-                <Bot className="w-10 h-10" style={{ color: '#33824E' }} />
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: 'linear-gradient(to bottom right, rgba(232, 101, 91, 0.2), rgba(66, 193, 227, 0.2))' }}>
+                <Bot className="w-10 h-10" style={{ color: 'rgb(232, 101, 91)' }} />
               </div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">Welcome to Al-Izhar AI</h2>
-              <p className="text-gray-500 max-w-md">
-                I'm here to help answer your questions about Al-Izhar School. Ask me about tuition fees, registration process, facilities, or anything else!
-              </p>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">Welcome to syuting.film AI</h2>
             </div>
           )}
           
@@ -116,7 +181,7 @@ export default function App() {
                 <div 
                   className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
                   style={msg.type === 'user' 
-                    ? { background: 'linear-gradient(to bottom right, #33824E, #2a6d40)' }
+                    ? { background: 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))' }
                     : { background: 'linear-gradient(to bottom right, #e5e7eb, #d1d5db)' }
                   }
                 >
@@ -137,9 +202,9 @@ export default function App() {
                         ? 'bg-red-50 text-red-800 border border-red-200'
                         : 'bg-white text-gray-800 shadow-sm border border-gray-100'
                     }`}
-                    style={msg.type === 'user' ? { background: 'linear-gradient(to bottom right, #33824E, #2a6d40)' } : {}}
+                    style={msg.type === 'user' ? { background: 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))' } : {}}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                    {msg.type === 'bot' ? renderMessage(msg.text) : <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>}
                   </div>
                 </div>
               </div>
@@ -155,7 +220,7 @@ export default function App() {
                 </div>
                 <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-gray-100">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#33824E' }} />
+                    <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'rgb(232, 101, 91)' }} />
                     <span className="text-sm text-gray-500">Thinking...</span>
                   </div>
                 </div>
@@ -185,8 +250,8 @@ export default function App() {
                   boxShadow: 'none'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#33824E';
-                  e.target.style.boxShadow = '0 0 0 2px rgba(51, 130, 78, 0.2)';
+                  e.target.style.borderColor = 'rgb(232, 101, 91)';
+                  e.target.style.boxShadow = '0 0 0 2px rgba(232, 101, 91, 0.2)';
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#d1d5db';
@@ -201,16 +266,16 @@ export default function App() {
               style={{ 
                 background: (loading || !input.trim()) 
                   ? 'linear-gradient(to bottom right, #d1d5db, #9ca3af)' 
-                  : 'linear-gradient(to bottom right, #33824E, #2a6d40)'
+                  : 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))'
               }}
               onMouseEnter={(e) => {
                 if (!loading && input.trim()) {
-                  e.currentTarget.style.background = 'linear-gradient(to bottom right, #2a6d40, #225a34)';
+                  e.currentTarget.style.background = 'linear-gradient(to right, rgb(220, 85, 75), rgb(50, 180, 215))';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!loading && input.trim()) {
-                  e.currentTarget.style.background = 'linear-gradient(to bottom right, #33824E, #2a6d40)';
+                  e.currentTarget.style.background = 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))';
                 }
               }}
             >
