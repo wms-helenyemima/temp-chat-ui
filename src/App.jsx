@@ -5,6 +5,9 @@ export default function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('628974324943');
+  const [tempPhoneNumber, setTempPhoneNumber] = useState('628974324943');
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -14,6 +17,23 @@ export default function App() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleSavePhone = () => {
+    if (tempPhoneNumber.startsWith('62') && tempPhoneNumber.length >= 10) {
+      setPhoneNumber(tempPhoneNumber);
+      setIsEditingPhone(false);
+    } else {
+      alert('Please enter a valid phone number starting with 62');
+    }
+  };
+
+  const handlePhoneInputChange = (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (!value.startsWith('62')) {
+      value = '62' + value.replace(/^62/, '');
+    }
+    setTempPhoneNumber(value);
+  };
 
   const isValidUrl = (string) => {
     try {
@@ -106,7 +126,7 @@ export default function App() {
                   value: {
                     messages: [
                       {
-                        from: '628974324943',
+                        from: phoneNumber,
                         text: {
                           body: userMessage
                         },
@@ -147,13 +167,61 @@ export default function App() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))' }}>
-              <Bot className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))' }}>
+                <Bot className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">syuting.film AI Assistant</h1>
+                <p className="text-sm text-gray-500">Always here to help</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">syuting.film AI Assistant</h1>
-              <p className="text-sm text-gray-500">Always here to help</p>
+            
+            {/* Phone Number Input */}
+            <div className="flex items-center gap-2">
+              {isEditingPhone ? (
+                <>
+                  <input
+                    type="text"
+                    value={tempPhoneNumber}
+                    onChange={handlePhoneInputChange}
+                    placeholder="62xxxxxxxxx"
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none text-sm w-40"
+                    style={{ 
+                      borderColor: 'rgb(232, 101, 91)',
+                      boxShadow: '0 0 0 2px rgba(232, 101, 91, 0.2)'
+                    }}
+                  />
+                  <button
+                    onClick={handleSavePhone}
+                    className="px-4 py-2 text-white rounded-lg text-sm font-medium"
+                    style={{ background: 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))' }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTempPhoneNumber(phoneNumber);
+                      setIsEditingPhone(false);
+                    }}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm text-gray-600">Phone: {phoneNumber}</span>
+                  <button
+                    onClick={() => setIsEditingPhone(true)}
+                    className="px-3 py-1 text-sm text-white rounded-lg"
+                    style={{ background: 'linear-gradient(to right, rgb(232, 101, 91), rgb(66, 193, 227))' }}
+                  >
+                    Change
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
